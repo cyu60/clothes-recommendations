@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -11,6 +11,8 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import ChoiceCard from "./components/ChoiceCard";
 import ColorChoice from "./components/ColorChoice";
+import { colors } from "@material-ui/core";
+const getColors = require("get-image-colors");
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,41 +23,91 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// #light-mode {
-//   background-color: #fff;
-// }
-
-// #blue-mode {
-//   background-color: #192734;
-// }
-
-// #green-mode {
-//   background-color: #78866b;
-// }
-
-// #purple-mode {
-//   background-color: #7e4c74;
-// }
 function App() {
   const [color, setColor] = useState("None");
+  const [colorlist, setColorlist] = useState([]);
   const [shirt, setShirt] = useState("None");
+  const [files, setFiles] = useState([]);
+  const [filename, setFilename] = useState("None");
   const classes = useStyles();
   // const colors = {
 
   // }
 
+  const fileHandler = (event) => {
+    console.log(event.target.files[0]);
+    console.log(event.target.files[0].name);
+    setFilename(event.target.files[0].name);
+    files.push(URL.createObjectURL(event.target.files[0]));
+    setFiles(files);
+    console.log(files);
+    // setFiles(event.target.files.map((file) => URL.createObjectURL(file)));
+  };
+
+  // SHould use async and await??
+  const findColors = () => {
+    files.forEach((file) =>
+      getColors(file).then((colors) => {
+        // `colors` is an array of color objects
+        colors = colors.map((color) => color.hex());
+        console.log(colors);
+        // setColorlist([...colorlist, colors]);
+        setColorlist(colorlist.concat(colors));
+        // colorlist.push(colors);
+        // setColorlist(colorlist);
+        console.log("new list:", colorlist);
+      })
+    );
+  };
+  useEffect(
+    () =>
+      files.forEach((file) =>
+        getColors(file).then((colors) => {
+          console.log("side effect")
+          // `colors` is an array of color objects
+          colors = colors.map((color) => color.hex());
+          console.log(colors);
+          // setColorlist([...colorlist, colors]);
+          setColorlist(colorlist.concat(colors));
+          // colorlist.push(colors);
+          // setColorlist(colorlist);
+          console.log("new list:", colorlist);
+        })
+      ),
+    [files]
+  );
+
   return (
     <div className="App">
-      <h1>Choose your preferred color</h1>
+      <h1>Upload photo of your image</h1>
+      <Button variant="contained" component="label">
+        Upload File
+        <input type="file" hidden onChange={fileHandler} />
+      </Button>
+      <h2> Your image is called {filename}</h2>
+      {files?.length === 0
+        ? null
+        : files.map((file) => <img src={file} alt="Your photo"></img>)}
+      <div>
+        <Button variant="contained" color="primary" onClick={findColors}>
+          Generate color choices
+        </Button>
+        <h1>Choose your preferred color</h1>
 
-      <div id="theme-options-wrapper">
-        <ColorChoice backgroundColor={"#fff"} onClick={() => setColor("light")}/>
-        <ColorChoice backgroundColor={"#192734"} onClick={() => setColor("blue")}/>
-        <ColorChoice backgroundColor={"#78866b"} onClick={() => setColor("green")}/>
-        <ColorChoice backgroundColor={"#7e4c74"} onClick={() => setColor("purple")}/>
+        
+
+        <div id="theme-options-wrapper">
+          {colorlist.length > 0
+            ? colorlist.map((color) => (
+                <ColorChoice
+                  backgroundColor={color}
+                  onClick={() => setColor(color)}
+                />
+              ))
+            : null}
+        </div>
+        <h1>Your preferred color is {color}</h1>
       </div>
-      <h1>Your preferred color is {color}</h1>
-
       {/* <Grid container className={classes.root} spacing={2}> */}
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={5}>
