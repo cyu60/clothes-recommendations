@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import ChoiceCard from "./components/ChoiceCard";
+import ColorChoice from "./components/ColorChoice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,40 +21,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// #light-mode {
+//   background-color: #fff;
+// }
+
+// #blue-mode {
+//   background-color: #192734;
+// }
+
+// #green-mode {
+//   background-color: #78866b;
+// }
+
+// #purple-mode {
+//   background-color: #7e4c74;
+// }
 function App() {
-  const [color, setcolor] = useState("None");
+  const [color, setColor] = useState("None");
   const [shirt, setShirt] = useState("None");
   const classes = useStyles();
+  // const colors = {
+
+  // }
 
   return (
     <div className="App">
       <h1>Choose your preferred color</h1>
 
       <div id="theme-options-wrapper">
-        <div
-          data-mode="light"
-          id="light-mode"
-          class="theme-dot"
-          onClick={() => setcolor("light")}
-        ></div>
-        <div
-          data-mode="blue"
-          id="blue-mode"
-          class="theme-dot"
-          onClick={() => setcolor("blue")}
-        ></div>
-        <div
-          data-mode="green"
-          id="green-mode"
-          class="theme-dot"
-          onClick={() => setcolor("green")}
-        ></div>
-        <div
-          data-mode="purple"
-          id="purple-mode"
-          class="theme-dot"
-          onClick={() => setcolor("purple")}
-        ></div>
+        <ColorChoice backgroundColor={"#fff"} onClick={() => setColor("light")}/>
+        <ColorChoice backgroundColor={"#192734"} onClick={() => setColor("blue")}/>
+        <ColorChoice backgroundColor={"#78866b"} onClick={() => setColor("green")}/>
+        <ColorChoice backgroundColor={"#7e4c74"} onClick={() => setColor("purple")}/>
       </div>
       <h1>Your preferred color is {color}</h1>
 
